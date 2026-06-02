@@ -8,8 +8,9 @@ defineProps({
   direction: String,
   zen: Boolean,
   canZen: { type: Boolean, default: false }, // 仅桌面应用可用
+  inkColor: { type: String, default: '#1f2937' },
 })
-const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction', 'update:zen'])
+const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction', 'update:zen', 'update:inkColor'])
 </script>
 
 <template>
@@ -44,6 +45,14 @@ const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidenta
     </template>
 
     <div class="group">
+      <input
+        v-if="zen"
+        class="ink"
+        type="color"
+        :value="inkColor"
+        title="字体颜色"
+        @input="emit('update:inkColor', $event.target.value)"
+      />
       <button
         class="fish"
         :class="{ active: zen }"
@@ -66,4 +75,5 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .toolbar.zen { margin-bottom: 6px; cursor: move; }
 .toolbar.zen .fish { opacity: .55; }
 .toolbar.zen .fish:hover { opacity: 1; }
+.ink { width: 26px; height: 26px; padding: 0; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; }
 </style>

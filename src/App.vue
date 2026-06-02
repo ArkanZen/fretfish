@@ -10,7 +10,7 @@ import { loadSettings, saveSettings } from './composables/useSettings.js'
 
 const saved = loadSettings({
   mode: 'reference', content: 'note', showAccidentals: false, soundOn: true,
-  range: 'naturalsOnly', direction: 'A',
+  range: 'naturalsOnly', direction: 'A', inkColor: '#1f2937',
 })
 
 const mode = ref(saved.mode)
@@ -19,6 +19,7 @@ const showAccidentals = ref(saved.showAccidentals)
 const soundOn = ref(saved.soundOn)
 const range = ref(saved.range)
 const direction = ref(saved.direction)
+const inkColor = ref(saved.inkColor)
 const selected = ref(null)
 
 // 摸鱼模式（窗口能力，仅桌面应用）
@@ -41,10 +42,11 @@ watch(zen, (v) => {
   setAlwaysOnTop(v)
 })
 
-watch([mode, content, showAccidentals, soundOn, range, direction], () => {
+watch([mode, content, showAccidentals, soundOn, range, direction, inkColor], () => {
   saveSettings({
     mode: mode.value, content: content.value, showAccidentals: showAccidentals.value,
     soundOn: soundOn.value, range: range.value, direction: direction.value,
+    inkColor: inkColor.value,
   })
 })
 </script>
@@ -61,10 +63,11 @@ watch([mode, content, showAccidentals, soundOn, range, direction], () => {
       v-model:range="range"
       v-model:direction="direction"
       v-model:zen="zen"
+      v-model:inkColor="inkColor"
       :canZen="inTauri"
     />
     <template v-if="mode === 'reference'">
-      <Fretboard :content="content" :showAccidentals="showAccidentals" :selected="selected" :bare="zen" @select="onSelect" />
+      <Fretboard :content="content" :showAccidentals="showAccidentals" :selected="selected" :bare="zen" :inkColor="inkColor" @select="onSelect" />
       <NoteInfoBar v-if="!zen" :cell="selected" @replay="replay" />
     </template>
     <QuizPanel

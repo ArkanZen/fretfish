@@ -10,6 +10,7 @@ const props = defineProps({
   highlightFn: { type: Function, default: null },    // (cell)=>boolean 练习用额外高亮
   hideLabels: { type: Boolean, default: false },     // hide note text (practice mode)
   bare: { type: Boolean, default: false },           // 摸鱼模式：透明背景只留线条
+  inkColor: { type: String, default: '#1f2937' },    // 摸鱼模式字体/线条颜色（可自定义）
 })
 const emit = defineEmits(['select'])
 
@@ -26,7 +27,9 @@ function visible(cell) {
 }
 function dotStyle(cell) {
   if (props.content === 'shape' && cell.shapes.length) {
-    return { background: SHAPES[cell.shapes[0]].color, color: '#fff' }
+    const c = SHAPES[cell.shapes[0]].color
+    // 摸鱼模式只用颜色染数字，不要圆圈底色
+    return props.bare ? { color: c } : { background: c, color: '#fff' }
   }
   return {}
 }
@@ -50,7 +53,7 @@ function dots(n) {
 </script>
 
 <template>
-  <div class="fb" :class="{ bare }">
+  <div class="fb" :class="{ bare }" :style="bare ? { '--ink': inkColor } : {}">
     <div v-for="s in 6" :key="s" class="fb-row">
       <div class="fb-strlabel">{{ s }}弦</div>
       <div
@@ -83,8 +86,11 @@ function dots(n) {
     <div class="fb-frets">
       <div class="fb-strlabel-spacer"></div>
       <div v-for="f in frets" :key="f" class="fb-fretno">
-        <span v-if="f === 0">弦枕</span>
-        <template v-else>{{ f }}<small>品</small></template>
+        <template v-if="bare">{{ f }}</template>
+        <template v-else>
+          <span v-if="f === 0">弦枕</span>
+          <template v-else>{{ f }}<small>品</small></template>
+        </template>
         <span v-if="inlayFrets.includes(f)" class="inlay">•</span>
         <span v-if="dblInlayFrets.includes(f)" class="inlay">••</span>
       </div>
@@ -112,4 +118,15 @@ function dots(n) {
 .oct.above { top: 1px; }
 .oct.below { bottom: 1px; }
 .digit { line-height: 1; }
+
+/* 摸鱼模式：细线条、纯数字、无圆圈底色，颜色随 --ink 自定义 */
+.fb.bare .fb-cell { border-right: 1px solid color-mix(in srgb, var(--ink) 38%, transparent); }
+.fb.bare .fb-cell.nut { border-right-width: 2px; }
+.fb.bare .fb-string { height: 1px; background: color-mix(in srgb, var(--ink) 38%, transparent); }
+.fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; height: auto; color: var(--ink); }
+.fb.bare .dot.root { color: #ef4444; }
+.fb.bare .dot.sel { outline: none; }
+.fb.bare .fb-fretno { color: var(--ink); }
+.fb.bare .fb-fretno small { color: var(--ink); }
+.fb.bare .inlay { color: color-mix(in srgb, var(--ink) 55%, transparent); }
 </style>
