@@ -6,8 +6,10 @@ defineProps({
   soundOn: Boolean,
   range: String,
   direction: String,
+  zen: Boolean,
+  canZen: { type: Boolean, default: false }, // 仅桌面应用可用
 })
-const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction'])
+const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction', 'update:zen'])
 </script>
 
 <template>
@@ -26,6 +28,12 @@ const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidenta
     <div class="group">
       <button :class="{ active: showAccidentals }" @click="emit('update:showAccidentals', !showAccidentals)">显示升降音</button>
       <button :class="{ active: soundOn }" @click="emit('update:soundOn', !soundOn)">🔊 发音</button>
+      <button
+        :class="{ active: zen }"
+        :disabled="!canZen"
+        :title="canZen ? '透明悬浮窗，适合摸鱼' : '仅桌面应用可用'"
+        @click="emit('update:zen', !zen)"
+      >😎 摸鱼</button>
     </div>
     <div class="group" v-if="mode === 'practice'">
       <span class="label">范围</span>
@@ -47,4 +55,5 @@ const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidenta
 .label { color: #475569; font-size: 13px; }
 button { padding: 6px 13px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 14px; cursor: pointer; }
 button.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+button:disabled { opacity: .45; cursor: not-allowed; }
 </style>
