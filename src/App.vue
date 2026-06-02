@@ -1,18 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Toolbar from './components/Toolbar.vue'
 import Fretboard from './components/Fretboard.vue'
 import NoteInfoBar from './components/NoteInfoBar.vue'
 import QuizPanel from './components/practice/QuizPanel.vue'
 import { useAudio } from './composables/useAudio.js'
+import { loadSettings, saveSettings } from './composables/useSettings.js'
 
-const mode = ref('reference')
-const content = ref('note')
-const showAccidentals = ref(false)
-const soundOn = ref(true)
+const saved = loadSettings({ mode: 'reference', content: 'note', showAccidentals: false, soundOn: true, range: 'naturalsOnly', direction: 'A' })
+
+const mode = ref(saved.mode)
+const content = ref(saved.content)
+const showAccidentals = ref(saved.showAccidentals)
+const soundOn = ref(saved.soundOn)
+const range = ref(saved.range)
+const direction = ref(saved.direction)
 const selected = ref(null)
-const range = ref('naturalsOnly')
-const direction = ref('A')
 
 const { playMidi } = useAudio()
 
@@ -23,6 +26,13 @@ function onSelect(cell) {
 function replay() {
   if (selected.value && soundOn.value) playMidi(selected.value.midi)
 }
+
+watch([mode, content, showAccidentals, soundOn, range, direction], () => {
+  saveSettings({
+    mode: mode.value, content: content.value, showAccidentals: showAccidentals.value,
+    soundOn: soundOn.value, range: range.value, direction: direction.value,
+  })
+})
 </script>
 
 <template>
