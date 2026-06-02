@@ -19,10 +19,11 @@ export function midiAt(string, fret) {
   return OPEN_MIDI[string - 1] + fret
 }
 
-// 简谱八度标记：以中央八度 C4–B4（MIDI 60–71）为基准（0=无点）。
+// 简谱八度标记：以 C3–B3（MIDI 48–59）为中音基准（0=无点），
+// 使 1弦空弦 E4 记为高音、6弦空弦 E2 记为低音，贴合吉他常用记法。
 // 正数=高音（数字上方加点），负数=低音（数字下方加点），绝对值=点数。
 export function octaveOf(midi) {
-  return Math.floor((midi - 60) / 12)
+  return Math.floor((midi - 48) / 12)
 }
 
 export function buildFretboard(maxFret = MAX_FRET) {

@@ -31,15 +31,15 @@ describe('midiAt', () => {
 })
 
 describe('octaveOf', () => {
-  it('中央八度 C4–B4（60–71）为 0（无点）', () => {
-    expect(octaveOf(60)).toBe(0) // C4
-    expect(octaveOf(71)).toBe(0) // B4
-    expect(octaveOf(64)).toBe(0) // E4 = 1弦空弦
+  it('中音基准 C3–B3（48–59）为 0（无点）', () => {
+    expect(octaveOf(48)).toBe(0) // C3 = 5弦3品
+    expect(octaveOf(59)).toBe(0) // B3 = 2弦空弦
+    expect(octaveOf(55)).toBe(0) // G3 = 3弦空弦
   })
-  it('高八度为正，低八度为负', () => {
-    expect(octaveOf(72)).toBe(1)  // C5 高一个八度
-    expect(octaveOf(48)).toBe(-1) // C3 低一个八度（5弦3品）
-    expect(octaveOf(40)).toBe(-2) // E2 = 6弦空弦，低两个八度
+  it('1弦空弦 E4 记为高音(+1)，6弦空弦 E2 记为低音(-1)', () => {
+    expect(octaveOf(64)).toBe(1)  // E4 = 1弦空弦 → 高音
+    expect(octaveOf(40)).toBe(-1) // E2 = 6弦空弦 → 低音
+    expect(octaveOf(72)).toBe(2)  // C5 → 倍高音
   })
 })
 
@@ -58,7 +58,7 @@ describe('buildFretboard', () => {
     const c = cells.find((x) => x.string === 5 && x.fret === 3)
     expect(c).toMatchObject({
       string: 5, fret: 3, note: 'C', isNatural: true,
-      solfege: '1', midi: 48, octave: -1, // C3 低音
+      solfege: '1', midi: 48, octave: 0, // C3 中音
     })
   })
   it('升降音的 isNatural=false 且无简谱唱名', () => {
