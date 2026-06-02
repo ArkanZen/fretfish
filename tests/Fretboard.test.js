@@ -24,3 +24,16 @@ describe('Fretboard.vue', () => {
     expect(w.emitted('select')[0][0]).toHaveProperty('fret')
   })
 })
+
+describe('Fretboard 简谱与升降音', () => {
+  it('content=solfege 显示数字唱名而非音名', () => {
+    const w = mount(Fretboard, { props: { content: 'solfege', showAccidentals: false } })
+    const text = w.text()
+    expect(text).toContain('7') // B=7，弦标签只含 1-6，可区分确为唱名
+    expect(text).not.toContain('C') // 不再显示音名字母
+  })
+  it('showAccidentals=true 时出现 # 音点', () => {
+    const w = mount(Fretboard, { props: { content: 'note', showAccidentals: true } })
+    expect(w.text()).toContain('#')
+  })
+})
