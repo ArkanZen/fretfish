@@ -4,8 +4,10 @@ defineProps({
   content: String,     // 'note' | 'solfege' | 'shape'
   showAccidentals: Boolean,
   soundOn: Boolean,
+  range: String,
+  direction: String,
 })
-const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn'])
+const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction'])
 </script>
 
 <template>
@@ -24,6 +26,17 @@ const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidenta
     <div class="group">
       <button :class="{ active: showAccidentals }" @click="emit('update:showAccidentals', !showAccidentals)">显示升降音</button>
       <button :class="{ active: soundOn }" @click="emit('update:soundOn', !soundOn)">🔊 发音</button>
+    </div>
+    <div class="group" v-if="mode === 'practice'">
+      <span class="label">范围</span>
+      <button :class="{ active: range === 'all' }" @click="emit('update:range', 'all')">全指板</button>
+      <button :class="{ active: range === 'low5' }" @click="emit('update:range', 'low5')">1-5品</button>
+      <button :class="{ active: range === 'naturalsOnly' }" @click="emit('update:range', 'naturalsOnly')">仅自然音</button>
+    </div>
+    <div class="group" v-if="mode === 'practice'">
+      <span class="label">方向</span>
+      <button :class="{ active: direction === 'A' }" @click="emit('update:direction', 'A')">看位置答音名</button>
+      <button :class="{ active: direction === 'B' }" @click="emit('update:direction', 'B')">看音名点位置</button>
     </div>
   </div>
 </template>

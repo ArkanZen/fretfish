@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import Toolbar from './components/Toolbar.vue'
 import Fretboard from './components/Fretboard.vue'
 import NoteInfoBar from './components/NoteInfoBar.vue'
+import QuizPanel from './components/practice/QuizPanel.vue'
 import { useAudio } from './composables/useAudio.js'
 
 const mode = ref('reference')
@@ -10,6 +11,8 @@ const content = ref('note')
 const showAccidentals = ref(false)
 const soundOn = ref(true)
 const selected = ref(null)
+const range = ref('naturalsOnly')
+const direction = ref('A')
 
 const { playMidi } = useAudio()
 
@@ -30,11 +33,20 @@ function replay() {
       v-model:content="content"
       v-model:showAccidentals="showAccidentals"
       v-model:soundOn="soundOn"
+      v-model:range="range"
+      v-model:direction="direction"
     />
     <template v-if="mode === 'reference'">
       <Fretboard :content="content" :showAccidentals="showAccidentals" :selected="selected" @select="onSelect" />
       <NoteInfoBar :cell="selected" @replay="replay" />
     </template>
+    <QuizPanel
+      v-else
+      :content="content"
+      :direction="direction"
+      :range="range"
+      :soundOn="soundOn"
+    />
   </main>
 </template>
 
