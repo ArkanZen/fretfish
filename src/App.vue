@@ -23,7 +23,7 @@ const inkColor = ref(saved.inkColor)
 const selected = ref(null)
 
 // 摸鱼模式（窗口能力，仅桌面应用）
-const { inTauri, setDecorations, setAlwaysOnTop } = useWindow()
+const { inTauri, setDecorations, setAlwaysOnTop, setShadow } = useWindow()
 const zen = ref(false) // 每次启动默认非摸鱼
 
 const { playMidi } = useAudio()
@@ -36,9 +36,10 @@ function replay() {
   if (selected.value && soundOn.value) playMidi(selected.value.midi)
 }
 
-// 进入摸鱼：去边框 + 自动置顶；退出：恢复
+// 进入摸鱼：去边框 + 去窗口阴影 + 自动置顶；退出：恢复
 watch(zen, (v) => {
   setDecorations(!v)
+  setShadow(!v)
   setAlwaysOnTop(v)
 })
 

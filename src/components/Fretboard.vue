@@ -137,5 +137,5 @@ function dots(n) {
 .fb.bare .oct.below { bottom: -5px; }
 /* 透明窗口上抗锯齿：走灰度渲染 + 更干净的细字体 + 超细字重 */
 .fb.bare { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: 'Helvetica Neue', Arial, system-ui, sans-serif; }
-.fb.bare .dot, .fb.bare .fb-strlabel, .fb.bare .fb-fretno { font-weight: 200; }
+.fb.bare .dot, .fb.bare .fb-strlabel, .fb.bare .fb-fretno { font-weight: 100; }
 </style>

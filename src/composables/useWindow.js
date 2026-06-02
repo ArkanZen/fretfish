@@ -14,7 +14,10 @@ export function useWindow() {
   async function setDecorations(on) {
     const w = await getWin(); if (w) await w.setDecorations(on)
   }
+  async function setShadow(on) {
+    const w = await getWin(); if (w) await w.setShadow(on)
+  }
   async function hide() { const w = await getWin(); if (w) await w.hide() }
   async function show() { const w = await getWin(); if (w) { await w.show(); await w.setFocus() } }
-  return { inTauri, setAlwaysOnTop, setDecorations, hide, show }
+  return { inTauri, setAlwaysOnTop, setDecorations, setShadow, hide, show }
 }
