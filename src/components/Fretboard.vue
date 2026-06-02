@@ -55,7 +55,7 @@ function dots(n) {
 <template>
   <div class="fb" :class="{ bare }" :style="bare ? { '--ink': inkColor } : {}">
     <div v-for="s in 6" :key="s" class="fb-row">
-      <div class="fb-strlabel">{{ s }}弦</div>
+      <div class="fb-strlabel">{{ bare ? s : s + '弦' }}</div>
       <div
         v-for="cell in rowCells(s)"
         :key="cell.fret"
@@ -123,10 +123,14 @@ function dots(n) {
 .fb.bare .fb-cell { border-right: 1px solid color-mix(in srgb, var(--ink) 38%, transparent); }
 .fb.bare .fb-cell.nut { border-right-width: 2px; }
 .fb.bare .fb-string { height: 1px; background: color-mix(in srgb, var(--ink) 38%, transparent); }
-.fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; height: auto; color: var(--ink); }
+.fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; min-height: 30px; height: auto; color: var(--ink); font-size: 19px; font-weight: 400; }
 .fb.bare .dot.root { color: #ef4444; }
 .fb.bare .dot.sel { outline: none; }
-.fb.bare .fb-fretno { color: var(--ink); }
+.fb.bare .fb-strlabel { color: var(--ink); font-weight: 400; }
+.fb.bare .fb-fretno { color: var(--ink); font-weight: 400; }
 .fb.bare .fb-fretno small { color: var(--ink); }
 .fb.bare .inlay { color: color-mix(in srgb, var(--ink) 55%, transparent); }
+.fb.bare .oct { font-size: 10px; }
+.fb.bare .oct.above { top: -5px; }
+.fb.bare .oct.below { bottom: -5px; }
 </style>
