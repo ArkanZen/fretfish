@@ -9,6 +9,7 @@ const props = defineProps({
   selected: { type: Object, default: null },        // {string,fret} 当前高亮
   highlightFn: { type: Function, default: null },    // (cell)=>boolean 练习用额外高亮
   hideLabels: { type: Boolean, default: false },     // hide note text (practice mode)
+  bare: { type: Boolean, default: false },           // 摸鱼模式：透明背景只留线条
 })
 const emit = defineEmits(['select'])
 
@@ -49,7 +50,7 @@ function dots(n) {
 </script>
 
 <template>
-  <div class="fb">
+  <div class="fb" :class="{ bare }">
     <div v-for="s in 6" :key="s" class="fb-row">
       <div class="fb-strlabel">{{ s }}弦</div>
       <div
@@ -93,6 +94,7 @@ function dots(n) {
 
 <style scoped>
 .fb { background: #3b2a1a; border-radius: 10px; padding: 10px 12px; overflow-x: auto; }
+.fb.bare { background: transparent; }
 .fb-row, .fb-frets { display: grid; grid-template-columns: 44px 56px repeat(16, minmax(38px, 1fr)); }
 .fb-strlabel { color: #e7d3b3; font-size: 12px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; height: 42px; }
 .fb-cell { position: relative; height: 42px; border-right: 2px solid #8a7a5c; display: flex; align-items: center; justify-content: center; }

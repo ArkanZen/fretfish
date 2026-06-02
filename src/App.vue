@@ -4,14 +4,13 @@ import Toolbar from './components/Toolbar.vue'
 import Fretboard from './components/Fretboard.vue'
 import NoteInfoBar from './components/NoteInfoBar.vue'
 import QuizPanel from './components/practice/QuizPanel.vue'
-import ZenModeBar from './components/ZenModeBar.vue'
 import { useAudio } from './composables/useAudio.js'
 import { useWindow } from './composables/useWindow.js'
 import { loadSettings, saveSettings } from './composables/useSettings.js'
 
 const saved = loadSettings({
   mode: 'reference', content: 'note', showAccidentals: false, soundOn: true,
-  range: 'naturalsOnly', direction: 'A', opacity: 0.95, scale: 1, onTop: false,
+  range: 'naturalsOnly', direction: 'A',
 })
 
 const mode = ref(saved.mode)
@@ -23,11 +22,8 @@ const direction = ref(saved.direction)
 const selected = ref(null)
 
 // 摸鱼模式（窗口能力，仅桌面应用）
-const { inTauri, setDecorations } = useWindow()
+const { inTauri, setDecorations, setAlwaysOnTop } = useWindow()
 const zen = ref(false) // 每次启动默认非摸鱼
-const opacity = ref(saved.opacity)
-const scale = ref(saved.scale)
-const onTop = ref(saved.onTop)
 
 const { playMidi } = useAudio()
 
@@ -38,34 +34,24 @@ function onSelect(cell) {
 function replay() {
   if (selected.value && soundOn.value) playMidi(selected.value.midi)
 }
-function exitZen() { zen.value = false }
 
-// 进入摸鱼时去窗口边框，退出时恢复
-watch(zen, (v) => setDecorations(!v))
+// 进入摸鱼：去边框 + 自动置顶；退出：恢复
+watch(zen, (v) => {
+  setDecorations(!v)
+  setAlwaysOnTop(v)
+})
 
-watch([mode, content, showAccidentals, soundOn, range, direction, opacity, scale, onTop], () => {
+watch([mode, content, showAccidentals, soundOn, range, direction], () => {
   saveSettings({
     mode: mode.value, content: content.value, showAccidentals: showAccidentals.value,
     soundOn: soundOn.value, range: range.value, direction: direction.value,
-    opacity: opacity.value, scale: scale.value, onTop: onTop.value,
   })
 })
 </script>
 
 <template>
-  <main
-    class="app"
-    :class="{ zen }"
-    :style="zen ? { opacity, transform: `scale(${scale})`, transformOrigin: 'top left' } : {}"
-  >
-    <ZenModeBar
-      v-if="zen"
-      v-model:opacity="opacity"
-      v-model:scale="scale"
-      v-model:onTop="onTop"
-      @exit="exitZen"
-    />
-    <h1 v-else>吉他指板记忆器</h1>
+  <main class="app" :class="{ zen }">
+    <h1 v-if="!zen">吉他指板记忆器</h1>
 
     <Toolbar
       v-model:mode="mode"
@@ -78,8 +64,8 @@ watch([mode, content, showAccidentals, soundOn, range, direction, opacity, scale
       :canZen="inTauri"
     />
     <template v-if="mode === 'reference'">
-      <Fretboard :content="content" :showAccidentals="showAccidentals" :selected="selected" @select="onSelect" />
-      <NoteInfoBar :cell="selected" @replay="replay" />
+      <Fretboard :content="content" :showAccidentals="showAccidentals" :selected="selected" :bare="zen" @select="onSelect" />
+      <NoteInfoBar v-if="!zen" :cell="selected" @replay="replay" />
     </template>
     <QuizPanel
       v-else
@@ -96,7 +82,7 @@ body { font-family: system-ui, -apple-system, "PingFang SC", sans-serif; margin:
 .app { max-width: 1100px; margin: 0 auto; padding: 24px; }
 h1 { font-size: 20px; }
 
-/* 摸鱼模式：窗口与页面背景透明，只剩指板浮在桌面上 */
-.app.zen { padding: 10px; max-width: none; background: transparent; }
+/* 摸鱼模式：窗口与页面背景透明，只剩指板线条浮在桌面上 */
+.app.zen { padding: 8px; max-width: none; background: transparent; }
 body:has(.app.zen) { background: transparent; }
 </style>
