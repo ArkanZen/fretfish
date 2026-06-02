@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.superpowers/
+src-tauri/target/
