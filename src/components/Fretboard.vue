@@ -106,12 +106,14 @@ function dots(n) {
 .fb-cell { position: relative; height: 42px; border-right: 2px solid #8a7a5c; display: flex; align-items: center; justify-content: center; }
 .fb-cell.nut { border-right: 7px solid #efe2c6; }
 .fb-string { position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: #b9a47e; }
+/* 弦枕（空弦/0品）格子里不画弦线，避免弦线在弦枕左侧突出 */
+.fb-cell.nut .fb-string { display: none; }
 .dot { position: relative; z-index: 2; width: 30px; height: 30px; border-radius: 50%; background: #f8fafc; color: #0f172a; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .dot.root { background: #ef4444; color: #fff; }
 .dot.sel { outline: 3px solid #facc15; }
 .dot.hit { background: #22c55e; color: #fff; }
 .fb-fretno { text-align: center; color: #f1e7cf; font-size: 13px; font-weight: 700; padding-top: 4px; }
-.fb-fretno small { color: #a89b7c; font-weight: 400; }
+.fb-fretno small { color: #a89b7c; font-weight: 300; }
 .inlay { display: block; color: #d9c9a6; font-size: 10px; }
 .fb-strlabel-spacer { width: 44px; }
 .oct { position: absolute; left: 0; right: 0; text-align: center; font-size: 9px; line-height: 1; letter-spacing: 1px; pointer-events: none; }
@@ -123,11 +125,11 @@ function dots(n) {
 .fb.bare .fb-cell { border-right: 1px solid color-mix(in srgb, var(--ink) 38%, transparent); }
 .fb.bare .fb-cell.nut { border-right-width: 2px; }
 .fb.bare .fb-string { height: 1px; background: color-mix(in srgb, var(--ink) 38%, transparent); }
-.fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; min-height: 30px; height: auto; color: var(--ink); font-size: 19px; font-weight: 400; }
+.fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; min-height: 30px; height: auto; color: var(--ink); font-size: 19px; font-weight: 300; }
 .fb.bare .dot.root { color: #ef4444; }
 .fb.bare .dot.sel { outline: none; }
-.fb.bare .fb-strlabel { color: var(--ink); font-weight: 400; }
-.fb.bare .fb-fretno { color: var(--ink); font-weight: 400; }
+.fb.bare .fb-strlabel { color: var(--ink); font-weight: 300; }
+.fb.bare .fb-fretno { color: var(--ink); font-weight: 300; }
 .fb.bare .fb-fretno small { color: var(--ink); }
 .fb.bare .inlay { color: color-mix(in srgb, var(--ink) 55%, transparent); }
 .fb.bare .oct { font-size: 10px; }
