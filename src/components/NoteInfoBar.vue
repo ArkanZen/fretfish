@@ -1,6 +1,14 @@
 <script setup>
+import { computed } from 'vue'
 const props = defineProps({ cell: { type: Object, default: null } })
 const emit = defineEmits(['replay'])
+
+const OCTAVE_WORD = { '-2': '倍低音', '-1': '低音', 0: '中音', 1: '高音', 2: '倍高音' }
+const solfegeText = computed(() => {
+  if (!props.cell || props.cell.solfege == null) return '—'
+  const word = OCTAVE_WORD[props.cell.octave] ?? ''
+  return word ? `${props.cell.solfege}（${word}）` : props.cell.solfege
+})
 </script>
 
 <template>
@@ -8,7 +16,7 @@ const emit = defineEmits(['replay'])
     <div class="big">{{ cell.note }}</div>
     <div class="fields">
       <div class="f"><span>音名</span><b>{{ cell.note }}</b></div>
-      <div class="f"><span>简谱(C调)</span><b>{{ cell.solfege ?? '—' }}</b></div>
+      <div class="f"><span>简谱(C调)</span><b>{{ solfegeText }}</b></div>
       <div class="f"><span>位置</span><b>{{ cell.string }}弦 · {{ cell.fret === 0 ? '空弦' : '第' + cell.fret + '品' }}</b></div>
       <div class="f"><span>所属指型</span><b>{{ cell.shapes.length ? cell.shapes.join('/') + ' 指型' : '—' }}</b></div>
       <div class="f"><span>根音</span><b>{{ cell.isRoot ? '是' : '否' }}</b></div>

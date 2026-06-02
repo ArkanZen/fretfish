@@ -8,7 +8,7 @@ export const OPEN_NOTES = ['E', 'B', 'G', 'D', 'A', 'E']
 export const OPEN_MIDI = [64, 59, 55, 50, 45, 40]
 // C 大调自然音 → 简谱唱名
 export const SOLFEGE_C = { C: '1', D: '2', E: '3', F: '4', G: '5', A: '6', B: '7' }
-export const MAX_FRET = 12
+export const MAX_FRET = 16
 
 export function noteAt(string, fret) {
   const openIdx = CHROMATIC.indexOf(OPEN_NOTES[string - 1])
@@ -19,19 +19,27 @@ export function midiAt(string, fret) {
   return OPEN_MIDI[string - 1] + fret
 }
 
+// 简谱八度标记：以中央八度 C4–B4（MIDI 60–71）为基准（0=无点）。
+// 正数=高音（数字上方加点），负数=低音（数字下方加点），绝对值=点数。
+export function octaveOf(midi) {
+  return Math.floor((midi - 60) / 12)
+}
+
 export function buildFretboard(maxFret = MAX_FRET) {
   const cells = []
   for (let string = 1; string <= 6; string++) {
     for (let fret = 0; fret <= maxFret; fret++) {
       const note = noteAt(string, fret)
       const isNatural = !note.includes('#')
+      const midi = midiAt(string, fret)
       cells.push({
         string,
         fret,
         note,
         isNatural,
         solfege: isNatural ? SOLFEGE_C[note] : null,
-        midi: midiAt(string, fret),
+        octave: octaveOf(midi), // 八度标记：>0 高音 / <0 低音 / 0 中音
+        midi,
         isRoot: note === 'C', // C 调根音 = C
         shapes: shapesForCell(string, fret),
       })

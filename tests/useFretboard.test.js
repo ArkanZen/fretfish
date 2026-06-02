@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { noteAt, midiAt, buildFretboard } from '../src/composables/useFretboard.js'
+import { noteAt, midiAt, buildFretboard, octaveOf, MAX_FRET } from '../src/composables/useFretboard.js'
 
 describe('noteAt', () => {
   it('空弦音正确（1→6 弦）', () => {
@@ -30,17 +30,35 @@ describe('midiAt', () => {
   })
 })
 
-describe('buildFretboard', () => {
-  it('默认 6 弦 × 13 列（0-12 品）= 78 个单元', () => {
-    const cells = buildFretboard()
-    expect(cells).toHaveLength(78)
+describe('octaveOf', () => {
+  it('中央八度 C4–B4（60–71）为 0（无点）', () => {
+    expect(octaveOf(60)).toBe(0) // C4
+    expect(octaveOf(71)).toBe(0) // B4
+    expect(octaveOf(64)).toBe(0) // E4 = 1弦空弦
   })
-  it('单元含完整字段', () => {
+  it('高八度为正，低八度为负', () => {
+    expect(octaveOf(72)).toBe(1)  // C5 高一个八度
+    expect(octaveOf(48)).toBe(-1) // C3 低一个八度（5弦3品）
+    expect(octaveOf(40)).toBe(-2) // E2 = 6弦空弦，低两个八度
+  })
+})
+
+describe('buildFretboard', () => {
+  it('MAX_FRET=16，默认 6 弦 × 17 列（0-16 品）= 102 个单元', () => {
+    expect(MAX_FRET).toBe(16)
+    const cells = buildFretboard()
+    expect(cells).toHaveLength(102)
+  })
+  it('包含到 16 品', () => {
+    const cells = buildFretboard()
+    expect(cells.some((c) => c.fret === 16)).toBe(true)
+  })
+  it('单元含完整字段（含 octave）', () => {
     const cells = buildFretboard()
     const c = cells.find((x) => x.string === 5 && x.fret === 3)
     expect(c).toMatchObject({
       string: 5, fret: 3, note: 'C', isNatural: true,
-      solfege: '1', midi: 48,
+      solfege: '1', midi: 48, octave: -1, // C3 低音
     })
   })
   it('升降音的 isNatural=false 且无简谱唱名', () => {

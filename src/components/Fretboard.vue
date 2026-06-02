@@ -13,8 +13,8 @@ const props = defineProps({
 const emit = defineEmits(['select'])
 
 const allCells = computed(() => buildFretboard())
-const frets = Array.from({ length: MAX_FRET + 1 }, (_, i) => i) // 0..12
-const inlayFrets = [3, 5, 7, 9]
+const frets = Array.from({ length: MAX_FRET + 1 }, (_, i) => i) // 0..16
+const inlayFrets = [3, 5, 7, 9, 15]
 const dblInlayFrets = [12]
 
 function rowCells(string) {
@@ -38,6 +38,13 @@ function isSelected(cell) {
 }
 function showDot(cell) {
   return visible(cell) && (props.hideLabels || label(cell) !== '')
+}
+// 简谱八度点：仅在简谱/指型内容、且有唱名时显示
+function showOctave(cell) {
+  return !props.hideLabels && (props.content === 'solfege' || props.content === 'shape') && cell.solfege != null
+}
+function dots(n) {
+  return '·'.repeat(Math.abs(n))
 }
 </script>
 
@@ -63,7 +70,11 @@ function showDot(cell) {
           :style="dotStyle(cell)"
           @click="emit('select', cell)"
         >
-          {{ hideLabels ? '' : label(cell) }}
+          <template v-if="!hideLabels">
+            <span v-if="showOctave(cell) && cell.octave > 0" class="oct above">{{ dots(cell.octave) }}</span>
+            <span class="digit">{{ label(cell) }}</span>
+            <span v-if="showOctave(cell) && cell.octave < 0" class="oct below">{{ dots(cell.octave) }}</span>
+          </template>
         </div>
       </div>
     </div>
@@ -82,7 +93,7 @@ function showDot(cell) {
 
 <style scoped>
 .fb { background: #3b2a1a; border-radius: 10px; padding: 10px 12px; overflow-x: auto; }
-.fb-row, .fb-frets { display: grid; grid-template-columns: 44px 56px repeat(12, minmax(40px, 1fr)); }
+.fb-row, .fb-frets { display: grid; grid-template-columns: 44px 56px repeat(16, minmax(38px, 1fr)); }
 .fb-strlabel { color: #e7d3b3; font-size: 12px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; height: 42px; }
 .fb-cell { position: relative; height: 42px; border-right: 2px solid #8a7a5c; display: flex; align-items: center; justify-content: center; }
 .fb-cell.nut { border-right: 7px solid #efe2c6; }
@@ -95,4 +106,8 @@ function showDot(cell) {
 .fb-fretno small { color: #a89b7c; font-weight: 400; }
 .inlay { display: block; color: #d9c9a6; font-size: 10px; }
 .fb-strlabel-spacer { width: 44px; }
+.oct { position: absolute; left: 0; right: 0; text-align: center; font-size: 9px; line-height: 1; letter-spacing: 1px; pointer-events: none; }
+.oct.above { top: 1px; }
+.oct.below { bottom: 1px; }
+.digit { line-height: 1; }
 </style>

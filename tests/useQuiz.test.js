@@ -10,8 +10,8 @@ describe('filterByRange', () => {
     const cells = filterByRange('naturalsOnly')
     expect(cells.every((c) => c.isNatural)).toBe(true)
   })
-  it('all 返回全部 78 单元', () => {
-    expect(filterByRange('all')).toHaveLength(78)
+  it('all 返回全部 102 单元', () => {
+    expect(filterByRange('all')).toHaveLength(102)
   })
 })
 
