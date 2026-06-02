@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
 import Fretboard from '../Fretboard.vue'
 import { createQuiz } from '../../composables/useQuiz.js'
 import { saveScore } from '../../composables/useSettings.js'
@@ -15,17 +15,26 @@ const quiz = ref(null)
 const question = ref(null)
 const feedback = ref('') // '', 'ok', 'no'
 const finished = ref(false)
+const chosen = ref(null)
+const bWrong = ref(false)
+
+let advanceTimer = null
 
 function start() {
+  clearTimeout(advanceTimer)
   quiz.value = createQuiz({ direction: props.direction, content: props.content, range: props.range, total: TOTAL })
   finished.value = false
   feedback.value = ''
+  chosen.value = null
   question.value = quiz.value.next()
 }
 watch(() => [props.direction, props.range, props.content], start, { immediate: true })
 
+onBeforeUnmount(() => clearTimeout(advanceTimer))
+
 function advance() {
   feedback.value = ''
+  chosen.value = null
   if (quiz.value.stats.index >= TOTAL) {
     finished.value = true
     saveScore({ ...quiz.value.stats, direction: props.direction, content: props.content })
@@ -36,15 +45,17 @@ function advance() {
 
 function answerA(opt) {
   if (feedback.value) return
+  chosen.value = opt
   const ok = quiz.value.submitA(opt)
   feedback.value = ok ? 'ok' : 'no'
-  setTimeout(advance, 700)
+  advanceTimer = setTimeout(advance, ok ? 700 : 1200)
 }
 function onFretSelect(cell) {
   if (feedback.value) return
   if (props.soundOn) playMidi(cell.midi)
   const done = quiz.value.submitB({ string: cell.string, fret: cell.fret })
-  if (done) { feedback.value = 'ok'; setTimeout(advance, 700) }
+  if (done) { feedback.value = 'ok'; advanceTimer = setTimeout(advance, 700) }
+  else { bWrong.value = true; setTimeout(() => (bWrong.value = false), 400) }
 }
 function highlightA(cell) {
   return question.value?.type === 'A'
@@ -77,14 +88,19 @@ function highlightB(cell) {
     <template v-else>
       <template v-if="question.type === 'A'">
         <p class="hint">下面高亮位置是什么{{ content === 'solfege' ? '唱名' : '音' }}？</p>
-        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightA" />
-        <div class="answers" :class="feedback">
-          <button v-for="o in question.options" :key="o" @click="answerA(o)">{{ o }}</button>
+        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightA" :hideLabels="true" />
+        <div class="answers">
+          <button
+            v-for="o in question.options"
+            :key="o"
+            :class="{ correct: feedback && o === question.answer, wrong: feedback === 'no' && o === chosen }"
+            @click="answerA(o)"
+          >{{ o }}</button>
         </div>
       </template>
       <template v-else>
-        <p class="hint">在指板上点出所有的 <b>{{ question.targetNote }}</b></p>
-        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightB" @select="onFretSelect" />
+        <p class="hint" :class="{ bwrong: bWrong }">在指板上点出所有的 <b>{{ question.targetNote }}</b></p>
+        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightB" :hideLabels="true" @select="onFretSelect" />
       </template>
     </template>
   </div>
@@ -96,8 +112,9 @@ function highlightB(cell) {
 .hint { font-size: 16px; }
 .answers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; max-width: 480px; }
 .answers button { padding: 14px 0; font-size: 18px; font-weight: 700; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; cursor: pointer; }
-.answers.ok button { background: #22c55e; color: #fff; }
-.answers.no button { background: #fee2e2; }
+.answers button.correct { background: #22c55e; color: #fff; border-color: #22c55e; }
+.answers button.wrong { background: #ef4444; color: #fff; border-color: #ef4444; }
+.hint.bwrong { color: #ef4444; }
 .result { text-align: center; padding: 30px; background: #fff; border-radius: 12px; }
 .result button { padding: 10px 20px; border: none; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer; }
 </style>

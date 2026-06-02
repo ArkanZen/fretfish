@@ -8,6 +8,7 @@ const props = defineProps({
   showAccidentals: { type: Boolean, default: false },
   selected: { type: Object, default: null },        // {string,fret} 当前高亮
   highlightFn: { type: Function, default: null },    // (cell)=>boolean 练习用额外高亮
+  hideLabels: { type: Boolean, default: false },     // hide note text (practice mode)
 })
 const emit = defineEmits(['select'])
 
@@ -35,6 +36,9 @@ function label(cell) {
 function isSelected(cell) {
   return props.selected && props.selected.string === cell.string && props.selected.fret === cell.fret
 }
+function showDot(cell) {
+  return visible(cell) && (props.hideLabels || label(cell) !== '')
+}
 </script>
 
 <template>
@@ -49,7 +53,7 @@ function isSelected(cell) {
       >
         <div class="fb-string"></div>
         <div
-          v-if="visible(cell) && label(cell) !== ''"
+          v-if="showDot(cell)"
           class="dot"
           :class="{
             root: cell.isRoot,
@@ -59,7 +63,7 @@ function isSelected(cell) {
           :style="dotStyle(cell)"
           @click="emit('select', cell)"
         >
-          {{ label(cell) }}
+          {{ hideLabels ? '' : label(cell) }}
         </div>
       </div>
     </div>
