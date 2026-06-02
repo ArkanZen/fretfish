@@ -1,3 +1,5 @@
+import { shapesForCell } from '../data/shapes.js'
+
 // 半音序
 export const CHROMATIC = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 // 1→6 弦的空弦音名
@@ -31,7 +33,7 @@ export function buildFretboard(maxFret = MAX_FRET) {
         solfege: isNatural ? SOLFEGE_C[note] : null,
         midi: midiAt(string, fret),
         isRoot: note === 'C', // C 调根音 = C
-        shapes: [], // 由 Task 6 填充
+        shapes: shapesForCell(string, fret),
       })
     }
   }

@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { buildFretboard, MAX_FRET } from '../composables/useFretboard.js'
+import { SHAPES } from '../data/shapes.js'
 
 const props = defineProps({
   content: { type: String, default: 'note' },      // 'note' | 'solfege' | 'shape'
@@ -21,8 +22,14 @@ function rowCells(string) {
 function visible(cell) {
   return props.showAccidentals || cell.isNatural
 }
+function dotStyle(cell) {
+  if (props.content === 'shape' && cell.shapes.length) {
+    return { background: SHAPES[cell.shapes[0]].color, color: '#fff' }
+  }
+  return {}
+}
 function label(cell) {
-  if (props.content === 'solfege') return cell.solfege ?? ''
+  if (props.content === 'solfege' || props.content === 'shape') return cell.solfege ?? ''
   return cell.note
 }
 function isSelected(cell) {
@@ -49,6 +56,7 @@ function isSelected(cell) {
             sel: isSelected(cell),
             hit: highlightFn && highlightFn(cell),
           }"
+          :style="dotStyle(cell)"
           @click="emit('select', cell)"
         >
           {{ label(cell) }}
