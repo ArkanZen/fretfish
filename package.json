@@ -16,9 +16,9 @@
     "tdev": "tauri dev",
     "tbuild": "tauri build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["guitar", "fretboard", "ear-training", "music", "vue", "tauri"],
+  "author": "ArkanZen",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "@tauri-apps/api": "^2.11.0",
