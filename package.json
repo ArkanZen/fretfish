@@ -1,7 +1,7 @@
 {
-  "name": "guiter-link",
+  "name": "fretfish",
   "version": "1.0.0",
-  "description": "",
+  "description": "吉他指板记忆器 — a guitar fretboard memory trainer with a floating transparent practice overlay (fish mode)",
   "main": "index.js",
   "directories": {
     "doc": "docs"
