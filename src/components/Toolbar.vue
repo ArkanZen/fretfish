@@ -8,10 +8,8 @@ defineProps({
   direction: String,
   zen: Boolean,
   canZen: { type: Boolean, default: false }, // 仅桌面应用可用
-  inkColor: { type: String, default: '#1f2937' },
-  opacity: { type: Number, default: 1 },
 })
-const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction', 'update:zen', 'update:inkColor', 'update:opacity'])
+const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction', 'update:zen', 'open-settings'])
 </script>
 
 <template>
@@ -46,22 +44,12 @@ const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidenta
     </template>
 
     <div class="group">
-      <input
-        v-if="zen"
-        class="opacity"
-        type="range" min="0.2" max="1" step="0.05"
-        :value="opacity"
-        title="透明度"
-        @input="emit('update:opacity', +$event.target.value)"
-      />
-      <input
-        v-if="zen"
-        class="ink"
-        type="color"
-        :value="inkColor"
-        title="字体颜色"
-        @input="emit('update:inkColor', $event.target.value)"
-      />
+      <button
+        class="gear"
+        :class="{ zen }"
+        title="设置"
+        @click="emit('open-settings')"
+      >⚙️</button>
       <button
         class="fish"
         :class="{ active: zen }"
@@ -80,10 +68,9 @@ const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidenta
 button { padding: 6px 13px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 14px; cursor: pointer; }
 button.active { background: #2563eb; color: #fff; border-color: #2563eb; }
 button:disabled { opacity: .45; cursor: not-allowed; }
-/* 摸鱼模式：工具条可拖动窗口，仅留 Fish 按钮 */
+/* 摸鱼模式：工具条可拖动窗口，仅留 ⚙️ 与 Fish 按钮 */
 .toolbar.zen { margin-bottom: 6px; cursor: move; }
-.toolbar.zen .fish { opacity: .55; }
-.toolbar.zen .fish:hover { opacity: 1; }
-.ink { width: 26px; height: 26px; padding: 0; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; }
-.opacity { width: 80px; vertical-align: middle; }
+.toolbar.zen .fish, .toolbar.zen .gear { opacity: .55; }
+.toolbar.zen .fish:hover, .toolbar.zen .gear:hover { opacity: 1; }
+.gear { padding: 6px 10px; }
 </style>

@@ -11,6 +11,9 @@ const props = defineProps({
   hideLabels: { type: Boolean, default: false },     // hide note text (practice mode)
   bare: { type: Boolean, default: false },           // 摸鱼模式：透明背景只留线条
   inkColor: { type: String, default: '#1f2937' },    // 摸鱼模式字体/线条颜色（可自定义）
+  fishFontSize: { type: Number, default: 19 },       // 摸鱼模式音符数字字号 (px)
+  fishFontWeight: { type: Number, default: 100 },    // 摸鱼模式音符数字字重 (100-900)
+  fishLineWidth: { type: Number, default: 1 },       // 摸鱼模式指板线条粗细 (px)
 })
 const emit = defineEmits(['select'])
 
@@ -53,7 +56,7 @@ function dots(n) {
 </script>
 
 <template>
-  <div class="fb" :class="{ bare }" :style="bare ? { '--ink': inkColor } : {}">
+  <div class="fb" :class="{ bare }" :style="bare ? { '--ink': inkColor, '--fz': fishFontSize + 'px', '--fw': fishFontWeight, '--lw': fishLineWidth + 'px' } : {}">
     <div v-for="s in 6" :key="s" class="fb-row">
       <div class="fb-strlabel">{{ bare ? s : s + '弦' }}</div>
       <div
@@ -72,6 +75,7 @@ function dots(n) {
             hit: highlightFn && highlightFn(cell),
           }"
           :style="dotStyle(cell)"
+          :data-tauri-drag-region="bare ? 'false' : null"
           @click="emit('select', cell)"
         >
           <template v-if="!hideLabels">
@@ -122,10 +126,10 @@ function dots(n) {
 .digit { line-height: 1; }
 
 /* 摸鱼模式：细线条、纯数字、无圆圈底色，颜色随 --ink 自定义 */
-.fb.bare .fb-cell { border-right: 1px solid var(--ink); }
-.fb.bare .fb-cell.nut { border-right-width: 2px; }
-.fb.bare .fb-string { height: 1px; background: var(--ink); }
-.fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; min-height: 30px; height: auto; color: var(--ink); font-size: 19px; font-weight: 300; }
+.fb.bare .fb-cell { border-right: var(--lw, 1px) solid var(--ink); }
+.fb.bare .fb-cell.nut { border-right-width: calc(var(--lw, 1px) * 2); }
+.fb.bare .fb-string { height: var(--lw, 1px); background: var(--ink); }
+.fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; min-height: 30px; height: auto; color: var(--ink); font-size: var(--fz, 19px); font-weight: var(--fw, 100); }
 .fb.bare .dot.root { color: #ef4444; }
 /* 摸鱼练习：高亮（目标/已找到）仍显示为实心圆 */
 .fb.bare .dot.hit { background: #22c55e; color: #fff; border-radius: 50%; width: 24px; height: 24px; min-height: 24px; }
@@ -139,5 +143,6 @@ function dots(n) {
 .fb.bare .oct.below { bottom: -5px; }
 /* 透明窗口上抗锯齿：走灰度渲染 + 更干净的细字体 + 超细字重 */
 .fb.bare { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: 'Helvetica Neue', Arial, system-ui, sans-serif; }
-.fb.bare .dot, .fb.bare .fb-strlabel, .fb.bare .fb-fretno { font-weight: 100; }
+/* 音符数字字重由 --fw 控制（见 .fb.bare .dot）；标签固定超细字重 */
+.fb.bare .fb-strlabel, .fb.bare .fb-fretno { font-weight: 100; }
 </style>

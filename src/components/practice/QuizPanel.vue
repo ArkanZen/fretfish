@@ -9,6 +9,10 @@ const props = defineProps({
   content: String, direction: String, range: String, soundOn: Boolean,
   bare: { type: Boolean, default: false },
   inkColor: { type: String, default: '#1f2937' },
+  timbre: { type: String, default: 'classical' },
+  fishFontSize: { type: Number, default: 19 },
+  fishFontWeight: { type: Number, default: 100 },
+  fishLineWidth: { type: Number, default: 1 },
 })
 const TOTAL = 20
 const { playMidi, playCorrect, playWrong } = useAudio()
@@ -59,7 +63,7 @@ function onFretSelect(cell) {
   const done = quiz.value.submitB({ string: cell.string, fret: cell.fret })
   if (props.soundOn) {
     if (done) playCorrect()
-    else if (isTarget) playMidi(cell.midi) // 点对一个但还没全找到：响该音
+    else if (isTarget) playMidi(cell.midi, props.timbre) // 点对一个但还没全找到：响该音
     else playWrong()
   }
   if (done) { feedback.value = 'ok'; advanceTimer = setTimeout(advance, 700) }
@@ -96,7 +100,7 @@ function highlightB(cell) {
     <template v-else>
       <template v-if="question.type === 'A'">
         <p class="hint">下面高亮位置是什么{{ content === 'solfege' ? '唱名' : '音' }}？</p>
-        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightA" :hideLabels="true" :bare="bare" :inkColor="inkColor" />
+        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightA" :hideLabels="true" :bare="bare" :inkColor="inkColor" :fishFontSize="fishFontSize" :fishFontWeight="fishFontWeight" :fishLineWidth="fishLineWidth" />
         <div class="answers">
           <button
             v-for="o in question.options"
@@ -108,7 +112,7 @@ function highlightB(cell) {
       </template>
       <template v-else>
         <p class="hint" :class="{ bwrong: bWrong }">在指板上点出所有的 <b>{{ question.targetNote }}</b></p>
-        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightB" :hideLabels="true" :bare="bare" :inkColor="inkColor" @select="onFretSelect" />
+        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightB" :hideLabels="true" :bare="bare" :inkColor="inkColor" :fishFontSize="fishFontSize" :fishFontWeight="fishFontWeight" :fishLineWidth="fishLineWidth" @select="onFretSelect" />
       </template>
     </template>
   </div>
