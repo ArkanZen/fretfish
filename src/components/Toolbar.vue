@@ -9,8 +9,9 @@ defineProps({
   zen: Boolean,
   canZen: { type: Boolean, default: false }, // 仅桌面应用可用
   inkColor: { type: String, default: '#1f2937' },
+  opacity: { type: Number, default: 1 },
 })
-const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction', 'update:zen', 'update:inkColor'])
+const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidentals', 'update:soundOn', 'update:range', 'update:direction', 'update:zen', 'update:inkColor', 'update:opacity'])
 </script>
 
 <template>
@@ -47,6 +48,14 @@ const emit = defineEmits(['update:mode', 'update:content', 'update:showAccidenta
     <div class="group">
       <input
         v-if="zen"
+        class="opacity"
+        type="range" min="0.2" max="1" step="0.05"
+        :value="opacity"
+        title="透明度"
+        @input="emit('update:opacity', +$event.target.value)"
+      />
+      <input
+        v-if="zen"
         class="ink"
         type="color"
         :value="inkColor"
@@ -76,4 +85,5 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .toolbar.zen .fish { opacity: .55; }
 .toolbar.zen .fish:hover { opacity: 1; }
 .ink { width: 26px; height: 26px; padding: 0; border: 1px solid #cbd5e1; border-radius: 6px; background: none; cursor: pointer; }
+.opacity { width: 80px; vertical-align: middle; }
 </style>

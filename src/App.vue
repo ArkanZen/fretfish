@@ -10,7 +10,7 @@ import { loadSettings, saveSettings } from './composables/useSettings.js'
 
 const saved = loadSettings({
   mode: 'reference', content: 'note', showAccidentals: false, soundOn: true,
-  range: 'naturalsOnly', direction: 'A', inkColor: '#1f2937',
+  range: 'naturalsOnly', direction: 'A', inkColor: '#1f2937', opacity: 1,
 })
 
 const mode = ref(saved.mode)
@@ -20,6 +20,7 @@ const soundOn = ref(saved.soundOn)
 const range = ref(saved.range)
 const direction = ref(saved.direction)
 const inkColor = ref(saved.inkColor)
+const opacity = ref(saved.opacity)
 const selected = ref(null)
 
 // 摸鱼模式（窗口能力，仅桌面应用）
@@ -43,17 +44,17 @@ watch(zen, (v) => {
   setAlwaysOnTop(v)
 })
 
-watch([mode, content, showAccidentals, soundOn, range, direction, inkColor], () => {
+watch([mode, content, showAccidentals, soundOn, range, direction, inkColor, opacity], () => {
   saveSettings({
     mode: mode.value, content: content.value, showAccidentals: showAccidentals.value,
     soundOn: soundOn.value, range: range.value, direction: direction.value,
-    inkColor: inkColor.value,
+    inkColor: inkColor.value, opacity: opacity.value,
   })
 })
 </script>
 
 <template>
-  <main class="app" :class="{ zen }">
+  <main class="app" :class="{ zen }" :style="zen ? { opacity } : {}">
     <h1 v-if="!zen">吉他指板记忆器</h1>
 
     <Toolbar
@@ -65,6 +66,7 @@ watch([mode, content, showAccidentals, soundOn, range, direction, inkColor], () 
       v-model:direction="direction"
       v-model:zen="zen"
       v-model:inkColor="inkColor"
+      v-model:opacity="opacity"
       :canZen="inTauri"
     />
     <template v-if="mode === 'reference'">
@@ -77,6 +79,8 @@ watch([mode, content, showAccidentals, soundOn, range, direction, inkColor], () 
       :direction="direction"
       :range="range"
       :soundOn="soundOn"
+      :bare="zen"
+      :inkColor="inkColor"
     />
   </main>
 </template>

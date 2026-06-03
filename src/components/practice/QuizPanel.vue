@@ -7,6 +7,8 @@ import { useAudio } from '../../composables/useAudio.js'
 
 const props = defineProps({
   content: String, direction: String, range: String, soundOn: Boolean,
+  bare: { type: Boolean, default: false },
+  inkColor: { type: String, default: '#1f2937' },
 })
 const TOTAL = 20
 const { playMidi } = useAudio()
@@ -69,7 +71,7 @@ function highlightB(cell) {
 </script>
 
 <template>
-  <div class="quiz">
+  <div class="quiz" :class="{ bare }" :style="bare ? { '--ink': inkColor } : {}">
     <div class="quizbar">
       <div class="q">第 {{ quiz.stats.index }} 题 / 共 {{ TOTAL }} 题</div>
       <div class="stats">
@@ -88,7 +90,7 @@ function highlightB(cell) {
     <template v-else>
       <template v-if="question.type === 'A'">
         <p class="hint">下面高亮位置是什么{{ content === 'solfege' ? '唱名' : '音' }}？</p>
-        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightA" :hideLabels="true" />
+        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightA" :hideLabels="true" :bare="bare" :inkColor="inkColor" />
         <div class="answers">
           <button
             v-for="o in question.options"
@@ -100,7 +102,7 @@ function highlightB(cell) {
       </template>
       <template v-else>
         <p class="hint" :class="{ bwrong: bWrong }">在指板上点出所有的 <b>{{ question.targetNote }}</b></p>
-        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightB" :hideLabels="true" @select="onFretSelect" />
+        <Fretboard :content="'note'" :showAccidentals="true" :highlightFn="highlightB" :hideLabels="true" :bare="bare" :inkColor="inkColor" @select="onFretSelect" />
       </template>
     </template>
   </div>
@@ -117,4 +119,14 @@ function highlightB(cell) {
 .hint.bwrong { color: #ef4444; }
 .result { text-align: center; padding: 30px; background: #fff; border-radius: 12px; }
 .result button { padding: 10px 20px; border: none; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer; }
+
+/* 摸鱼模式：计分条/提示/选项透明化，跟随自定义字体色 */
+.quiz.bare { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: 'Helvetica Neue', Arial, system-ui, sans-serif; font-weight: 300; }
+.quiz.bare .quizbar { background: transparent; color: var(--ink); padding: 2px 4px; margin-bottom: 6px; font-size: 12px; }
+.quiz.bare .stats b, .quiz.bare .stats span { color: var(--ink); }
+.quiz.bare .hint { color: var(--ink); font-weight: 300; }
+.quiz.bare .answers button { background: transparent; color: var(--ink); border-color: color-mix(in srgb, var(--ink) 45%, transparent); font-weight: 300; }
+.quiz.bare .answers button.correct { background: transparent; color: #22c55e; border-color: #22c55e; }
+.quiz.bare .answers button.wrong { background: transparent; color: #ef4444; border-color: #ef4444; }
+.quiz.bare .result { background: transparent; color: var(--ink); }
 </style>
