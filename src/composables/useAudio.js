@@ -28,5 +28,33 @@ export function useAudio() {
     osc.start(now)
     osc.stop(now + duration)
   }
-  return { playMidi }
+  // FC/红白机风格音效：方波音序
+  function playSeq(notes) {
+    const ac = getCtx()
+    if (!ac) return
+    let t = ac.currentTime
+    for (const n of notes) {
+      const osc = ac.createOscillator()
+      const gain = ac.createGain()
+      osc.type = n.type || 'square'
+      osc.frequency.value = n.freq
+      gain.gain.setValueAtTime(0.0001, t)
+      gain.gain.exponentialRampToValueAtTime(n.vol ?? 0.18, t + 0.005)
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + n.dur)
+      osc.connect(gain).connect(ac.destination)
+      osc.start(t)
+      osc.stop(t + n.dur)
+      t += n.dur
+    }
+  }
+  // 答对：经典「金币」式上行两音
+  function playCorrect() {
+    playSeq([{ freq: 988, dur: 0.09 }, { freq: 1319, dur: 0.16 }])
+  }
+  // 答错：低沉下行「错误」蜂鸣
+  function playWrong() {
+    playSeq([{ freq: 196, dur: 0.12 }, { freq: 147, dur: 0.22 }])
+  }
+
+  return { playMidi, playCorrect, playWrong }
 }

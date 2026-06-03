@@ -11,7 +11,7 @@ const props = defineProps({
   inkColor: { type: String, default: '#1f2937' },
 })
 const TOTAL = 20
-const { playMidi } = useAudio()
+const { playMidi, playCorrect, playWrong } = useAudio()
 
 const quiz = ref(null)
 const question = ref(null)
@@ -50,14 +50,20 @@ function answerA(opt) {
   chosen.value = opt
   const ok = quiz.value.submitA(opt)
   feedback.value = ok ? 'ok' : 'no'
+  if (props.soundOn) (ok ? playCorrect : playWrong)()
   advanceTimer = setTimeout(advance, ok ? 700 : 1200)
 }
 function onFretSelect(cell) {
   if (feedback.value) return
-  if (props.soundOn) playMidi(cell.midi)
+  const isTarget = question.value.positions.some((p) => p.string === cell.string && p.fret === cell.fret)
   const done = quiz.value.submitB({ string: cell.string, fret: cell.fret })
+  if (props.soundOn) {
+    if (done) playCorrect()
+    else if (isTarget) playMidi(cell.midi) // 点对一个但还没全找到：响该音
+    else playWrong()
+  }
   if (done) { feedback.value = 'ok'; advanceTimer = setTimeout(advance, 700) }
-  else { bWrong.value = true; setTimeout(() => (bWrong.value = false), 400) }
+  else if (!isTarget) { bWrong.value = true; setTimeout(() => (bWrong.value = false), 400) }
 }
 function highlightA(cell) {
   return question.value?.type === 'A'

@@ -122,16 +122,18 @@ function dots(n) {
 .digit { line-height: 1; }
 
 /* 摸鱼模式：细线条、纯数字、无圆圈底色，颜色随 --ink 自定义 */
-.fb.bare .fb-cell { border-right: 1px solid color-mix(in srgb, var(--ink) 38%, transparent); }
+.fb.bare .fb-cell { border-right: 1px solid var(--ink); }
 .fb.bare .fb-cell.nut { border-right-width: 2px; }
-.fb.bare .fb-string { height: 1px; background: color-mix(in srgb, var(--ink) 38%, transparent); }
+.fb.bare .fb-string { height: 1px; background: var(--ink); }
 .fb.bare .dot { background: transparent; box-shadow: none; border-radius: 0; width: auto; min-height: 30px; height: auto; color: var(--ink); font-size: 19px; font-weight: 300; }
 .fb.bare .dot.root { color: #ef4444; }
-.fb.bare .dot.sel { outline: none; }
+/* 摸鱼练习：高亮（目标/已找到）仍显示为实心圆 */
+.fb.bare .dot.hit { background: #22c55e; color: #fff; border-radius: 50%; width: 24px; height: 24px; min-height: 24px; }
+.fb.bare .dot.sel { outline: 2px solid #facc15; border-radius: 50%; }
 .fb.bare .fb-strlabel { color: var(--ink); font-weight: 300; }
 .fb.bare .fb-fretno { color: var(--ink); font-weight: 300; }
 .fb.bare .fb-fretno small { color: var(--ink); }
-.fb.bare .inlay { color: color-mix(in srgb, var(--ink) 55%, transparent); }
+.fb.bare .inlay { color: var(--ink); }
 .fb.bare .oct { font-size: 10px; }
 .fb.bare .oct.above { top: -5px; }
 .fb.bare .oct.below { bottom: -5px; }
